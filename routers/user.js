@@ -12,14 +12,14 @@ router.get('/',(req,res) => {
     host:"localhost",
     user:"root",
     password:"",
-    database:"test"
+    database:"nodeCrud"
    }); 
 
    const data =  db.connect((err)=>{
     if(err){
-        throw err;
+        throw "data base connection error ......";
     }
-    console.log('database conected');
+    console.log('database conected........');
   });
 
 
@@ -32,9 +32,9 @@ router.get('/user/',(req,res)=>{
     db.query(usersql,(err,rows,fields)=>{
         if(err){
             console.log("faield sql query"+err);
-            res.end("db connectivity error");
+            res.status(409);
         }
-    res.json(rows);
+    res.status(200).json(rows);
     });
 });
 
@@ -49,10 +49,10 @@ router.get('/user/:id',(req,res)=>{
     db.query(usersql,[userid],(err,rows,fields)=>{
         if(err){
             console.log("faield sql query"+err);
+            res.status(409);
         }
     console.log("fetch id"+req.params.id);
-    res.json(rows);
-
+    res.status(200).json(rows);
     });
 });
 
@@ -71,9 +71,9 @@ router.post('/create_user',(req,res)=>{
      if(err)
      {
          console.log("mysql error" + err);
+         res.status(406).send({inserted:false});
      }
-     console.log("data inserted");
-     res.send("data inserted");
+     res.status(201).send({inserted:true});
     });
    
 });
@@ -90,9 +90,10 @@ router.delete('/del_user/:id',(req,res)=>{
      if(err)
      {
          console.log("mysql error" + err);
+         res.status(406).send({deleted:false});
      }
      console.log("data deleted");
-     res.send("data deleted");
+     res.status(204).send({deleted:true});
     });
  });
 
@@ -109,9 +110,14 @@ router.delete('/del_user/:id',(req,res)=>{
      if(!err)
      {
         console.log("data updated");
-        res.send("data updated");
+        res.status(201).send({updated:true});
      }
-     console.log("mysql error" + err);
+     else{
+        res.status(406).send({updated:false});
+        console.log("mysql error" + err);
+     }
+     
+
     });
    
    });
